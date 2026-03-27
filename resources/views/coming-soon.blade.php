@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ATS MEMBER | Coming Soon</title>
     
+    <!-- Favicon (Browser Tab Logo) -->
+    <link rel="icon" href="{{ asset('assets/logo-01.png') }}" type="image/png">
+
     <!-- Google Fonts: Barlow Condensed & Barlow -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -337,12 +340,11 @@
 
         <!-- Brand -->
         <div class="brand-bar">
-            <!-- <div class="brand-logo">O</div> -->
-            <div class="brand-name">ATS <span>MEMBER</span></div>
+            <img src="{{ asset('assets/logo-01.png') }}" alt="ATS Member Logo" style="max-height: 80px; width: auto; object-fit: contain;">
         </div>
 
         <!-- Eyebrow -->
-        <div class="eyebrow"></div>
+        <div class="eyebrow">Lorem Ipsum is simply dummy text</div>
 
         <!-- Heading -->
         <h1 class="heading">
