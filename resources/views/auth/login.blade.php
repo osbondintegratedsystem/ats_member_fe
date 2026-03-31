@@ -3,7 +3,14 @@
 @section('title', 'Login')
 
 @section('content')
-    <form action="{{ url('/checkin') }}" method="GET">
+    @if ($errors->any())
+        <div style="background: var(--red); color: white; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
+    <form action="{{ route('login') }}" method="POST">
+        @csrf
         <div class="form-group">
             <label class="form-label" for="id">ID</label>
             <input type="text" id="id" name="id" class="form-control" placeholder="Enter your ID" required autofocus>

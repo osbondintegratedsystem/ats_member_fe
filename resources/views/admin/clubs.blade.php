@@ -62,22 +62,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><strong>MDS</strong></td>
-                        <td>Mangga Dua Square</td>
-                        <td>
-                            <a href="javascript:void(0)" onclick="openEditClubModal('MDS', 'Mangga Dua Square')" style="color: var(--white); margin-right: 10px;">Edit</a>
-                            <a href="javascript:void(0)" onclick="openDeleteClubModal('Mangga Dua Square')" style="color: var(--red);">Delete</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>PVM</strong></td>
-                        <td>Pluit Village Mall</td>
-                        <td>
-                            <a href="javascript:void(0)" onclick="openEditClubModal('PVM', 'Pluit Village Mall')" style="color: var(--white); margin-right: 10px;">Edit</a>
-                            <a href="javascript:void(0)" onclick="openDeleteClubModal('Pluit Village Mall')" style="color: var(--red);">Delete</a>
-                        </td>
-                    </tr>
+                    @forelse($clubs as $club)
+                        <tr>
+                            <td><strong>{{ $club->id }}</strong></td>
+                            <td>{{ $club->name }}</td>
+                            <td>
+                                <a href="javascript:void(0)" onclick="openEditClubModal('{{ $club->id }}', '{{ $club->name }}')" style="color: var(--white); margin-right: 10px;">Edit</a>
+                                <a href="javascript:void(0)" onclick="openDeleteClubModal('{{ $club->id }}')" style="color: var(--red);">Delete</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" style="text-align: center;">No clubs found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -118,7 +116,7 @@
                 
                 <div style="display: flex; gap: 15px;">
                     <button class="btn-primary" style="flex: 1; background: #333;" onclick="closeDeleteModalDirect()">Cancel</button>
-                    <button class="btn-primary" style="flex: 1;" onclick="alert('Club deleted!'); closeDeleteModalDirect();">Delete</button>
+                    <button class="btn-primary" style="flex: 1;" onclick="submitDeleteClub()">Delete</button>
                 </div>
             </div>
         </div>
@@ -160,6 +158,41 @@
 
         function closeDeleteModalDirect() {
             document.getElementById('deleteClubModal').style.display = 'none';
+        }
+
+        async function submitClubForm(event) {
+            event.preventDefault();
+            const id = document.getElementById('c-id').value;
+            const name = document.getElementById('c-name').value;
+            const isEdit = document.getElementById('c-id').readOnly;
+
+            const payload = { id, name };
+            const url = isEdit ? `/admin/clubs/${id}` : `/admin/clubs`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) window.location.reload();
+                else alert('Failed to save club');
+            } catch(e) { alert('Error communicating'); }
+        }
+        document.querySelector('#clubModal form').onsubmit = submitClubForm;
+
+        async function submitDeleteClub() {
+            const id = document.getElementById('delete-clubname').textContent;
+            try {
+                const res = await fetch(`/admin/clubs/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                if (res.ok) window.location.reload();
+                else alert('Failed to delete');
+            } catch(e) { alert('Error communicating'); }
         }
     </script>
 @endsection

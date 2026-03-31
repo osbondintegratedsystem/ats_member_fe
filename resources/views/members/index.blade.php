@@ -120,9 +120,9 @@
     </div>
 
     <div class="card" style="margin-bottom: 20px;">
-        <form action="#" method="GET" style="display: flex; gap: 10px; max-width: 400px;">
-            <input type="text" class="form-control" placeholder="Search by ID or Name..." name="search">
-            <button class="btn-primary" type="button">SEARCH</button>
+        <form action="{{ route('members') }}" method="GET" style="display: flex; gap: 10px; max-width: 400px;">
+            <input type="text" class="form-control" placeholder="Search by ID or Name..." name="search" value="{{ $search ?? '' }}">
+            <button class="btn-primary" type="submit">SEARCH</button>
         </form>
     </div>
 
@@ -138,28 +138,19 @@
                         <th>HP</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr class="member-row" onclick="showMemberDetail('ATS-1001', 'John Doe', 'Gold Membership (1 Year)', '24 Dec 2026', '081234567890')">
-                        <td><strong>ATS-1001</strong></td>
-                        <td>John Doe</td>
-                        <td>Gold Membership (1 Year)</td>
-                        <td><span class="badge badge-green">24 Dec 2026</span></td>
-                        <td>081234567890</td>
-                    </tr>
-                    <tr class="member-row" onclick="showMemberDetail('ATS-1002', 'Jane Smith', 'Platinum Package (6 Months)', '12 Jan 2026', '089876543210')">
-                        <td><strong>ATS-1002</strong></td>
-                        <td>Jane Smith</td>
-                        <td>Platinum Package (6 Months)</td>
-                        <td><span class="badge badge-red">12 Jan 2026</span></td>
-                        <td>089876543210</td>
-                    </tr>
-                    <tr class="member-row" onclick="showMemberDetail('ATS-1003', 'Michael Johnson', 'Silver Monthly', '05 Mar 2026', '08111222333')">
-                        <td><strong>ATS-1003</strong></td>
-                        <td>Michael Johnson</td>
-                        <td>Silver Monthly</td>
-                        <td><span class="badge badge-green">05 Mar 2026</span></td>
-                        <td>08111222333</td>
-                    </tr>
+                    @forelse($members as $member)
+                        <tr class="member-row" onclick="showMemberDetail('{{ $member->id }}', '{{ $member->name }}', '{{ $member->package }}', '{{ $member->expirationDate }}', '{{ $member->phone }}')">
+                            <td><strong>{{ $member->id }}</strong></td>
+                            <td>{{ $member->name }}</td>
+                            <td>{{ $member->package }}</td>
+                            <td><span class="badge badge-green">{{ $member->expirationDate }}</span></td>
+                            <td>{{ $member->phone }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No members found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -209,27 +200,27 @@
             <div class="modal-body" style="padding: 40px;">
                 <h2 style="font-family: 'Barlow Condensed', sans-serif; font-size: 28px; margin-bottom: 25px; text-transform: uppercase;">Add New Member</h2>
                 
-                <form onsubmit="event.preventDefault(); alert('Member added!'); closeAddModalDirect();">
+                <form id="addMemberForm">
                     <div class="form-group">
                         <label class="form-label">Member ID</label>
-                        <input type="text" class="form-control" placeholder="ATS-XXXXX" required>
+                        <input type="text" id="add-id" class="form-control" placeholder="ATS-XXXXX" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
-                        <input type="text" class="form-control" placeholder="Enter full name" required>
+                        <input type="text" id="add-name" class="form-control" placeholder="Enter full name" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Last Package</label>
-                        <input type="text" class="form-control" placeholder="e.g. Gold Membership" required>
+                        <input type="text" id="add-package" class="form-control" placeholder="e.g. Gold Membership" required>
                     </div>
                     <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div>
                             <label class="form-label">Exp Date</label>
-                            <input type="date" class="form-control" required>
+                            <input type="date" id="add-exp" class="form-control" required>
                         </div>
                         <div>
                             <label class="form-label">HP / Phone</label>
-                            <input type="text" class="form-control" placeholder="08xxxxxxxx" required>
+                            <input type="text" id="add-phone" class="form-control" placeholder="08xxxxxxxx" required>
                         </div>
                     </div>
                     
@@ -275,8 +266,26 @@
             }
         }
 
-        function closeModalDirect() {
-            document.getElementById('memberModal').style.display = 'none';
-        }
+        document.getElementById('addMemberForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const payload = {
+                id: document.getElementById('add-id').value,
+                name: document.getElementById('add-name').value,
+                package: document.getElementById('add-package').value,
+                expiration_date: document.getElementById('add-exp').value,
+                phone: document.getElementById('add-phone').value
+            };
+
+            try {
+                const res = await fetch('/members', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) window.location.reload();
+                else alert('Failed to save member');
+            } catch(e) { alert('Error communicating'); }
+        });
     </script>
 @endsection

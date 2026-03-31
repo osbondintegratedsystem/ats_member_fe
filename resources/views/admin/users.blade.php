@@ -64,26 +64,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><strong>admin123</strong></td>
-                        <td>Super Admin</td>
-                        <td>Administrator</td>
-                        <td><span class="badge badge-green">ACTIVE</span></td>
-                        <td>
-                            <a href="javascript:void(0)" onclick="openEditUserModal('admin123', 'Super Admin', 'Administrator', 'ACTIVE')" style="color: var(--white); margin-right: 10px;">Edit</a>
-                            <a href="javascript:void(0)" onclick="openDeleteUserModal('admin123')" style="color: var(--red);">Delete</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>reception_1</strong></td>
-                        <td>Jane Doe</td>
-                        <td>Receptionist</td>
-                        <td><span class="badge badge-green">ACTIVE</span></td>
-                        <td>
-                            <a href="javascript:void(0)" onclick="openEditUserModal('reception_1', 'Jane Doe', 'Receptionist', 'ACTIVE')" style="color: var(--white); margin-right: 10px;">Edit</a>
-                            <a href="javascript:void(0)" onclick="openDeleteUserModal('reception_1')" style="color: var(--red);">Delete</a>
-                        </td>
-                    </tr>
+                    @forelse($users as $user)
+                        <tr>
+                            <td><strong>{{ $user->username }}</strong></td>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->role }}</td>
+                            <td>
+                                @if($user->status === 'ACTIVE')
+                                    <span class="badge badge-green">ACTIVE</span>
+                                @else
+                                    <span class="badge badge-red">{{ $user->status }}</span>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" onclick="openEditUserModal('{{ $user->username }}', '{{ $user->name }}', '{{ $user->role }}', '{{ $user->status }}')" style="color: var(--white); margin-right: 10px;">Edit</a>
+                                <a href="javascript:void(0)" onclick="openDeleteUserModal('{{ $user->username }}')" style="color: var(--red);">Delete</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No users found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -138,8 +140,9 @@
                 <p style="color: var(--gray); margin-bottom: 30px;">Do you really want to delete user <strong id="delete-username" style="color: var(--white);">---</strong>? This action cannot be undone.</p>
                 
                 <div style="display: flex; gap: 15px;">
+                    <form id="deleteUserForm" onsubmit="submitDelete(event)" style="display:none;"></form>
                     <button class="btn-primary" style="flex: 1; background: #333;" onclick="closeDeleteModalDirect()">Cancel</button>
-                    <button class="btn-primary" style="flex: 1;" onclick="alert('User deleted!'); closeDeleteModalDirect();">Delete</button>
+                    <button class="btn-primary" style="flex: 1;" onclick="document.getElementById('deleteUserForm').dispatchEvent(new Event('submit'))">Delete</button>
                 </div>
             </div>
         </div>
@@ -186,5 +189,66 @@
         function closeDeleteModalDirect() {
             document.getElementById('deleteUserModal').style.display = 'none';
         }
+
+        async function submitUserForm(event) {
+            event.preventDefault();
+            const id = document.getElementById('u-id').value;
+            const isEdit = document.getElementById('u-id').readOnly;
+            
+            const payload = {
+                id: id,
+                name: document.getElementById('u-name').value,
+                role: document.getElementById('u-role').value,
+                status: document.getElementById('u-status').value,
+                _token: '{{ csrf_token() }}'
+            };
+
+            const url = isEdit ? `/admin/users/${id}` : `/admin/users`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Failed to save');
+                }
+            } catch (err) {
+                alert('Communication error');
+            }
+        }
+
+        async function submitDelete(event) {
+            event.preventDefault();
+            const id = document.getElementById('delete-username').textContent;
+
+            try {
+                const res = await fetch(`/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete');
+                }
+            } catch (err) {
+                alert('Communication error');
+            }
+        }
+
+        document.querySelector('#userModal form').onsubmit = submitUserForm;
     </script>
 @endsection
