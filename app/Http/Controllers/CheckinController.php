@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\CheckinService;
+use App\DTOs\CheckinDTO;
 
 class CheckinController extends Controller
 {
@@ -11,11 +12,23 @@ class CheckinController extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('checkin');
-    }
+        $startDate = $request->input('date_start', now()->format('Y-m-d'));
+        $endDate = $request->input('date_end', now()->format('Y-m-d'));
 
+        $apiStartDate = str_replace('-', '', $startDate);
+        $apiEndDate = str_replace('-', '', $endDate);
+
+        $recapsData = $this->checkinService->list($apiStartDate, $apiEndDate);
+
+        $recaps = array_map(function ($data) {
+            return CheckinDTO::fromArray($data);
+        }, $recapsData);
+
+        return view('checkin', compact('recaps', 'startDate', 'endDate'));
+    }
+    //! CHECKIN
     public function checkIn(Request $request)
     {
         $request->validate([
@@ -31,6 +44,9 @@ class CheckinController extends Controller
         return response()->json(['success' => true, 'data' => $result]);
     }
 
+
+
+    //! CHECKOUT
     public function checkOut(Request $request)
     {
         $request->validate([

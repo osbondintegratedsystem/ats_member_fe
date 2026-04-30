@@ -35,11 +35,11 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                     <div class="form-group" style="flex: 1;">
                         <label class="form-label">START</label>
-                        <input type="text" class="form-control" name="start_date" placeholder="dd/mm/yy">
+                        <input type="date" class="form-control" name="date_start" value="{{ $startDate ?? now()->format('Y-m-d') }}">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label class="form-label">END</label>
-                        <input type="text" class="form-control" name="end_date" placeholder="dd/mm/yy">
+                        <input type="date" class="form-control" name="date_end" value="{{ $endDate ?? now()->format('Y-m-d') }}">
                     </div>
                 </div>
 
@@ -79,64 +79,137 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse($recaps ?? [] as $recap)
                     <tr>
-                        <td><strong>xxx</strong></td>
-                        <td style="text-transform: uppercase;">ALBERT EISTEN</td>
+                        <td><strong>{{ $recap->memberId }}</strong></td>
+                        <td style="text-transform: uppercase;">{{ $recap->memberName }}</td>
                         <td>
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <div style="text-align: center;">
                                     <span class="badge"
-                                        style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK
-                                        IN</span><br>
-                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
-                                </div>
-                                <span style="color: var(--gray); font-weight: bold; font-size: 20px;">-</span>
-                                <div style="text-align: center;">
-                                    <span class="badge"
-                                        style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK
-                                        OUT</span><br>
-                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
+                                        style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">{{ strtoupper($recap->type) }}</span><br>
+                                    <small style="color: var(--gray);">{{ \Carbon\Carbon::parse($recap->dateTime)->format('d-m-y H:i') }}</small>
                                 </div>
                             </div>
                         </td>
                     </tr>
+                    @empty
                     <tr>
-                        <td><strong>xxx</strong></td>
-                        <td style="text-transform: uppercase;">JOHN DOE</td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <div style="text-align: center;">
-                                    <span class="badge"
-                                        style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK
-                                        IN</span><br>
-                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
-                                </div>
-                                <span style="color: var(--gray); font-weight: bold; font-size: 20px;">-</span>
-                                <div style="text-align: center;">
-                                    <span class="badge"
-                                        style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK
-                                        OUT</span><br>
-                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
-                                </div>
-                            </div>
-                        </td>
+                        <td colspan="3" style="text-align: center;">No check-ins found.</td>
                     </tr>
-                    <tr>
-                        <td><strong>xxx</strong></td>
-                        <td style="text-transform: uppercase;">THOMAS ALFA</td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <div style="text-align: center;">
-                                    <span class="badge"
-                                        style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK
-                                        IN</span><br>
-                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    @push('styles')
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--dark-2);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .modal-header-bg {
+            height: 100px;
+            background: linear-gradient(45deg, var(--red), #ff4d4d);
+        }
+        .modal-profile-info {
+            display: flex;
+            padding: 0 20px;
+            margin-top: -40px;
+            align-items: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .modal-photo {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 4px solid var(--dark-2);
+            background: var(--dark-3);
+            object-fit: cover;
+        }
+        .modal-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .modal-id {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        .detail-grid {
+            padding: 0 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        .detail-item label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        .detail-item span {
+            font-weight: 600;
+        }
+    </style>
+    @endpush
+
+    <!-- Member Detail Modal -->
+    <div id="memberModal" class="modal-overlay" style="display: none;" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModalDirect()">&times;</span>
+            <div class="modal-body">
+                <div class="modal-header-bg"></div>
+                <div class="modal-profile-info">
+                    <img id="m-photo" src="" alt="Member" class="modal-photo">
+                    <div class="modal-details">
+                        <div id="m-name" class="modal-name">---</div>
+                        <div id="m-id" class="modal-id">---</div>
+                    </div>
+                </div>
+                
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label>Last Package</label>
+                        <span id="m-package">---</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Expiration Date</label>
+                        <span id="m-exp">---</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>HP / Phone</label>
+                        <span id="m-hp">---</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -193,10 +266,14 @@
 
                     const data = await res.json();
                     if (res.ok) {
-                        alert(`${actionType.toUpperCase()} Successful!`);
-                        document.getElementById('member_id').value = '';
-                        document.getElementById('member_preview').style.display = 'none';
-                        document.getElementById('member_id').focus();
+                        const memberInfo = data.data && data.data.member ? data.data.member : currentMember;
+                        if(memberInfo) {
+                            sessionStorage.setItem('showCheckinModal', JSON.stringify(memberInfo));
+                        } else {
+                            // Fallback if we don't have member details
+                            sessionStorage.setItem('showCheckinModal', JSON.stringify({id: id, name: 'Unknown'}));
+                        }
+                        window.location.href = '{{ route("checkin") }}';
                     } else {
                         alert(`Error: ${data.message || 'Failed'}`);
                     }
@@ -204,6 +281,34 @@
                     alert('Communication Error');
                 }
             }
+
+            function closeModal(e) {
+                if (e.target.id === 'memberModal') {
+                    closeModalDirect();
+                }
+            }
+
+            function closeModalDirect() {
+                document.getElementById('memberModal').style.display = 'none';
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const modalDataStr = sessionStorage.getItem('showCheckinModal');
+                if (modalDataStr) {
+                    try {
+                        const memberData = JSON.parse(modalDataStr);
+                        document.getElementById('m-name').textContent = (memberData.name || '---').toUpperCase();
+                        document.getElementById('m-id').textContent = memberData.id || '---';
+                        document.getElementById('m-photo').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(memberData.name || 'Unknown')}&background=D42B2B&color=fff&size=200`;
+                        document.getElementById('m-package').textContent = memberData.package || '---';
+                        document.getElementById('m-exp').textContent = memberData.expired_date || '---';
+                        document.getElementById('m-hp').textContent = memberData.phone || '---';
+                        
+                        document.getElementById('memberModal').style.display = 'flex';
+                    } catch (e) {}
+                    sessionStorage.removeItem('showCheckinModal');
+                }
+            });
         </script>
     @endpush
 @endsection

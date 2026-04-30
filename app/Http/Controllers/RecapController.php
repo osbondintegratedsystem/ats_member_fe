@@ -17,7 +17,10 @@ class RecapController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $recapsData = $this->checkinService->recap($startDate, $endDate);
+        $apiStartDate = $startDate ? str_replace('-', '', $startDate) : null;
+        $apiEndDate = $endDate ? str_replace('-', '', $endDate) : null;
+
+        $recapsData = $this->checkinService->list($apiStartDate, $apiEndDate);
 
         $recaps = array_map(function ($data) {
             return CheckinDTO::fromArray($data);

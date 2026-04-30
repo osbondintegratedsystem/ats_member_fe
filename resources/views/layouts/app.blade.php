@@ -340,8 +340,8 @@
                     class="menu-link {{ request()->is('checkin') ? 'active' : '' }}">Checkin & Checkout</a></li>
             <li class="menu-item"><a href="{{ url('/members') }}"
                     class="menu-link {{ request()->is('members') ? 'active' : '' }}">List Member</a></li>
-            <li class="menu-item"><a href="{{ url('/recap') }}"
-                    class="menu-link {{ request()->is('recap') ? 'active' : '' }}">Recap Daily Checkin</a></li>
+            <!-- <li class="menu-item"><a href="{{ url('/recap') }}"
+                    class="menu-link {{ request()->is('recap') ? 'active' : '' }}">Recap Daily Checkin</a></li> -->
         </ul>
 
         <div class="menu-title">Administration</div>
