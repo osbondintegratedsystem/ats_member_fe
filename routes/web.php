@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ClubController;
 
 Route::get('/', function () {
-    return view('coming-soon');
+    return view('welcome');
 });
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -29,7 +29,7 @@ Route::middleware([\App\Http\Middleware\ApiAuthenticated::class])->group(functio
     Route::get('/recap', [RecapController::class, 'index'])->name('recap');
 
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::resource('users', UserController::class)->except(['create','edit','show']);
-        Route::resource('clubs', ClubController::class)->except(['create','edit','show']);
+        Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+        Route::resource('clubs', ClubController::class)->except(['create', 'edit', 'show']);
     });
 });

@@ -30,12 +30,12 @@ class ApiClient
 
         // If your API uses an API key header
         if ($apiKey = config('api.api_key')) {
-             $request->withHeaders(['X-Api-Key' => $apiKey]);
+            $request->withHeaders(['X-Api-Key' => $apiKey]);
         }
 
-        // Add Bearer Token if available in session
+        // Add Authorization header if available in session
         if ($this->token) {
-            $request->withToken($this->token);
+            $request->withHeaders(['Authorization' => $this->token]);
         }
 
         return $request->retry(2, 100); // Retry twice with 100ms delay
