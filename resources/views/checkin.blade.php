@@ -7,22 +7,40 @@
         <h1 class="page-title">Checkin & Checkout</h1>
     </div>
 
-    <div class="card" style="max-width: 500px;">
-        <form onsubmit="event.preventDefault(); loadMember()">
-            <div class="form-group">
-                <label class="form-label" for="member_id">ID Member</label>
-                <input type="text" id="member_id" name="id" class="form-control" placeholder="Scan or Enter ID Member" required autofocus autocomplete="off">
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
-                <button type="button" class="btn-primary" style="flex: 1;" onclick="submitAction('checkin')">CHECKIN</button>
-                <button type="button" class="btn-primary" style="flex: 1; background: #333;" onclick="submitAction('checkout')">CHECKOUT</button>
-            </div>
-        </form>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+        <!-- Left: Check In Form -->
+        <div class="card" style="flex: 1; min-width: 300px; margin-bottom: 0;">
+            <form onsubmit="event.preventDefault(); loadMember()">
+                <div class="form-group">
+                    <label class="form-label" for="member_id">ID MEMBER</label>
+                    <input type="text" id="member_id" name="id" class="form-control" placeholder="xxx" required autofocus autocomplete="off">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn-primary" style="flex: 1; padding: 10px; font-weight: bold; border: 1px solid var(--red);" onclick="submitAction('checkin')">CHECK IN</button>
+                    <button type="button" class="btn-primary" style="flex: 1; background: transparent; border: 1px solid var(--gray); color: var(--text-color); font-weight: bold; padding: 10px;" onclick="submitAction('checkout')">CHECK OUT</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right: Filter Form -->
+        <div class="card" style="flex: 1; min-width: 300px; margin-bottom: 0;">
+            <form action="" method="GET" style="display: flex; gap: 10px; align-items: flex-end; height: 100%;">
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <label class="form-label">START</label>
+                    <input type="text" class="form-control" name="start_date" placeholder="dd/mm/yy">
+                </div>
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <label class="form-label">END</label>
+                    <input type="text" class="form-control" name="end_date" placeholder="dd/mm/yy">
+                </div>
+                <button class="btn-primary" type="submit" style="background: transparent; border: 1px solid var(--gray); color: var(--text-color); height: 46px; font-weight: bold; padding: 0 20px;">FILTER</button>
+            </form>
+        </div>
     </div>
 
     <!-- View of member info after input -->
-    <div id="member_preview" class="card" style="max-width: 500px; display: none; gap: 20px; align-items: center; margin-top: 20px;">
+    <div id="member_preview" class="card" style="max-width: 500px; display: none; gap: 20px; align-items: center; margin-bottom: 20px;">
         <div style="width: 100px; height: 100px; background: var(--dark-3); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid var(--red);">
             <img id="preview_photo" src="" alt="Member Photo">
         </div>
@@ -30,6 +48,69 @@
             <h2 id="preview_name" style="font-family: 'Barlow Condensed', sans-serif; font-size: 24px; margin-bottom: 4px;">...</h2>
             <p id="preview_id" style="color: var(--gray); font-size: 14px; margin-bottom: 8px;">ID: ...</p>
             <span id="preview_status" class="badge badge-green">...</span>
+        </div>
+    </div>
+
+    <!-- Recap Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-transform: uppercase;">MEMBER ID</th>
+                        <th style="text-transform: uppercase;">MEMBER NAME</th>
+                        <th style="text-transform: uppercase;">TYPE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>xxx</strong></td>
+                        <td style="text-transform: uppercase;">ALBERT EISTEN</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="text-align: center;">
+                                    <span class="badge" style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK IN</span><br>
+                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
+                                </div>
+                                <span style="color: var(--gray); font-weight: bold; font-size: 20px;">-</span>
+                                <div style="text-align: center;">
+                                    <span class="badge" style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK OUT</span><br>
+                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>xxx</strong></td>
+                        <td style="text-transform: uppercase;">JOHN DOE</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="text-align: center;">
+                                    <span class="badge" style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK IN</span><br>
+                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
+                                </div>
+                                <span style="color: var(--gray); font-weight: bold; font-size: 20px;">-</span>
+                                <div style="text-align: center;">
+                                    <span class="badge" style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK OUT</span><br>
+                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>xxx</strong></td>
+                        <td style="text-transform: uppercase;">THOMAS ALFA</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="text-align: center;">
+                                    <span class="badge" style="background: transparent; color: var(--text-color); border: 1px solid var(--gray); margin-bottom: 5px; display: inline-block; border-radius: 4px; padding: 4px 10px;">CHECK IN</span><br>
+                                    <small style="color: var(--gray);">dd-mm-yy HH:mm</small>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

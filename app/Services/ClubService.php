@@ -14,17 +14,20 @@ class ClubService
     public function getAll(): array
     {
         return Cache::remember('clubs.all', 300, function () {
-            $response = $this->api->get('/admin/clubs');
-            if (isset($response['error'])) {
+            $response = $this->api->get('/club/list', ['search' => 'all']);
+            if (isset($response['error']) || ($response['isSuccess'] ?? false) === false) {
                 return [];
             }
-            return $response['data'] ?? $response;
+            return $response['clubs'] ?? [];
         });
     }
 
     public function create(array $data): array
     {
-        $response = $this->api->post('/admin/clubs', $data);
+        $response = $this->api->post('/club/add', [
+            'id' => $data['id'] ?? '',
+            'name' => $data['name'] ?? ''
+        ]);
         if (empty($response['error'])) {
             Cache::forget('clubs.all');
         }
@@ -33,7 +36,10 @@ class ClubService
 
     public function update(string $id, array $data): array
     {
-        $response = $this->api->put("/admin/clubs/{$id}", $data);
+        $response = $this->api->post("/club/edit", [
+            'id' => $id,
+            'name' => $data['name'] ?? ''
+        ]);
         if (empty($response['error'])) {
             Cache::forget('clubs.all');
         }
@@ -42,7 +48,7 @@ class ClubService
 
     public function delete(string $id): array
     {
-        $response = $this->api->delete("/admin/clubs/{$id}");
+        $response = $this->api->post("/club/delete", ['id' => $id]);
         if (empty($response['error'])) {
             Cache::forget('clubs.all');
         }

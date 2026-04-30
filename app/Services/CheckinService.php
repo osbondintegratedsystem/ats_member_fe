@@ -12,26 +12,28 @@ class CheckinService
 
     public function checkIn(string $memberId): array
     {
-        return $this->api->post('/checkin', ['member_id' => $memberId]);
+        return $this->api->post('/member/checkin', ['id' => $memberId]);
     }
 
     public function checkOut(string $memberId): array
     {
-        return $this->api->post('/checkout', ['member_id' => $memberId]);
+        return $this->api->post('/member/checkout', ['id' => $memberId]);
     }
 
     public function recap(?string $startDate, ?string $endDate): array
     {
         $query = [];
-        if ($startDate) $query['start_date'] = $startDate;
-        if ($endDate) $query['end_date'] = $endDate;
+        if ($startDate)
+            $query['date_start'] = $startDate;
+        if ($endDate)
+            $query['date_end'] = $endDate;
 
-        $response = $this->api->get('/recap', $query);
+        $response = $this->api->get('/recap/list', $query);
 
-        if (isset($response['error'])) {
+        if (isset($response['error']) || ($response['isSuccess'] ?? false) === false) {
             return [];
         }
 
-        return $response['data'] ?? $response;
+        return $response['items'] ?? [];
     }
 }

@@ -14,8 +14,8 @@ class AuthService
     public function login(string $username, string $password): array
     {
         $response = $this->api->post('/auth/login', [
-            'username' => $username,
-            'password' => $password,
+            'id' => $username,
+            'pass' => $password,
         ]);
 
         if (empty($response['error']) && isset($response['token'])) {
