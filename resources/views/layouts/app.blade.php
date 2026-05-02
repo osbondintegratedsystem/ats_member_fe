@@ -293,6 +293,32 @@
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
+
+        /* === FORM LAYOUT SYSTEM (NEW) === */
+        .form-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            /* override dari 20px */
+            flex: 1;
+        }
+
+        .form-actions {
+            margin-top: auto;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
     </style>
     @stack('styles')
 </head>
@@ -314,8 +340,8 @@
                     class="menu-link {{ request()->is('checkin') ? 'active' : '' }}">Checkin & Checkout</a></li>
             <li class="menu-item"><a href="{{ url('/members') }}"
                     class="menu-link {{ request()->is('members') ? 'active' : '' }}">List Member</a></li>
-            <li class="menu-item"><a href="{{ url('/recap') }}"
-                    class="menu-link {{ request()->is('recap') ? 'active' : '' }}">Recap Daily Checkin</a></li>
+            <!-- <li class="menu-item"><a href="{{ url('/recap') }}"
+                    class="menu-link {{ request()->is('recap') ? 'active' : '' }}">Recap Daily Checkin</a></li> -->
         </ul>
 
         <div class="menu-title">Administration</div>
